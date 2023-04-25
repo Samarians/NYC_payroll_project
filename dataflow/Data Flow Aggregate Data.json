@@ -25,22 +25,22 @@
 						"referenceName": "ds_synapse_payroll_summary",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "ExportDataToSynapse"
 				}
 			],
 			"transformations": [
 				{
-					"name": "union1",
+					"name": "CombiningHistoryAndCurrentData",
 					"description": "Combining rows from transformation 'CurrentYearPayrollinSQLDB, HistoricalPayrollDataInDataLake'"
 				},
 				{
-					"name": "filter1"
+					"name": "AddingFilter"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "AddingAggregationColumn"
 				},
 				{
-					"name": "aggregate1"
+					"name": "CalculatingTotalPaid"
 				}
 			],
 			"scriptLines": [
@@ -96,13 +96,13 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> HistoricalPayrollDataInDataLake",
-				"CurrentYearPayrollinSQLDB, HistoricalPayrollDataInDataLake union(byName: true)~> union1",
-				"union1 filter(toInteger(FiscalYear) >= $dataflow_param_fiscalyear) ~> filter1",
-				"filter1 derive(TotalPaid = RegularGrossPaid + TotalOTPaid+TotalOtherPay) ~> derivedColumn1",
-				"derivedColumn1 aggregate(groupBy(AgencyName,",
+				"CurrentYearPayrollinSQLDB, HistoricalPayrollDataInDataLake union(byName: true)~> CombiningHistoryAndCurrentData",
+				"CombiningHistoryAndCurrentData filter(toInteger(FiscalYear) >= $dataflow_param_fiscalyear) ~> AddingFilter",
+				"AddingFilter derive(TotalPaid = RegularGrossPaid + TotalOTPaid+TotalOtherPay) ~> AddingAggregationColumn",
+				"AddingAggregationColumn aggregate(groupBy(AgencyName,",
 				"          FiscalYear),",
-				"     TotalPaid = sum(TotalPaid)) ~> aggregate1",
-				"aggregate1 sink(allowSchemaDrift: true,",
+				"     TotalPaid = sum(TotalPaid)) ~> CalculatingTotalPaid",
+				"CalculatingTotalPaid sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          FiscalYear as integer,",
@@ -119,7 +119,7 @@
 				"     allowCopyCommand: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+				"     errorHandlingOption: 'stopOnFirstError') ~> ExportDataToSynapse"
 			]
 		}
 	}
