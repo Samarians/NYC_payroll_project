@@ -1,0 +1,17 @@
+{
+	"name": "NYCPayrollDataFactory",
+	"properties": {
+		"globalParameters": {
+			"gl_param_fiscalyear": {
+				"type": "int",
+				"value": 2021
+			}
+		}
+	},
+	"location": "westus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "52630f73-bad4-451f-98c4-aa629bd25612",
+		"tenantId": "d315b668-956d-4535-aab9-c9d8ceaf2486"
+	}
+}
