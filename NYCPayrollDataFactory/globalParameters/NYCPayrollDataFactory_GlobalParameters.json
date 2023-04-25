@@ -1,0 +1,6 @@
+{
+	"gl_param_fiscalyear": {
+		"type": "int",
+		"value": 2021
+	}
+}
